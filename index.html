@@ -213,7 +213,10 @@ class Game {
     const btn = document.getElementById('ui-btn');
     const s1  = document.getElementById('d1');
 
-    clearInterval(this._a1);
+    if (this._a1) {
+      clearInterval(this._a1);
+      this._a1 = null;
+    }
 
     btn.disabled = true;
     s1.classList.add('rolling-die');
@@ -226,7 +229,9 @@ class Game {
 
     setTimeout(() => {
       clearInterval(rv);
-      clearInterval(this._a1); this._a1 = null;
+      clearInterval(this._a1); 
+      this._a1 = null; 
+      
       s1.classList.remove('rolling-die');
 
       const res = Math.floor(Math.random() * 6) + 1;
@@ -268,7 +273,7 @@ class Game {
     }
 
     // ── Rounds normaux (score < 15) ──────────────────────────────────────
-    this.lastDie = this.currentDie; // On garde en mémoire pour le coup d'après
+    this.lastDie = this.currentDie; 
     this.phase = 'EDGING';
     this.vib(80);
     this.setTag(`Round ${this.lancers} / ${MAX_LANCERS} · +${this.currentDie} pts`);
@@ -283,7 +288,6 @@ class Game {
     this.score += this.currentDie;
 
     if (this.score >= WIN) {
-      // Bonus réussi -> Orgasme ruiné après le chrono du dé bonus
       this.phase = 'BONUS_TIMER';
       this.triggerGlow('purple');
       this.vib([200,100,200,100,200]);
@@ -292,7 +296,6 @@ class Game {
       this.updateUI();
       this.startTimer(this.currentDie * 60);
     } else {
-      // Échec du bonus
       this.phase = 'END';
       this.triggerGlow('red');
       this.vib([600]);
@@ -345,7 +348,6 @@ class Game {
 
     this.vib([150,100,150]);
 
-    // Victoire classique
     if (this.score >= WIN && this.phase !== 'BONUS_TIMER') {
       this.phase = 'END';
       this.setTag(`Victoire !`);
@@ -354,7 +356,6 @@ class Game {
       return;
     }
 
-    // Fin du chrono bonus (Orgasme ruiné)
     if (this.phase === 'BONUS_TIMER') {
       this.phase = 'END';
       this.setTag('Bonus validé !');
@@ -363,7 +364,6 @@ class Game {
       return;
     }
 
-    // Fin des 4 lancers sans atteindre 15 -> Phase de Lancer Bonus
     if (this.lancers >= MAX_LANCERS && this.score < WIN) {
       this.phase = 'BONUS_ROLL';
       this.setTag('Score insuffisant');
@@ -372,7 +372,6 @@ class Game {
       return;
     }
 
-    // Retour au lancer classique pour le round suivant
     this.phase = 'ROLL';
     this.setTag('Chrono terminé');
     this.setText('Temps validé. Relancez le dé pour le round suivant.');
