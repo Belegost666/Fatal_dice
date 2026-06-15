@@ -170,7 +170,7 @@
 </div>
 
 <script>
-const WIN = 12; // Modifié à 12 points
+const WIN = 12;
 const MAX_LANCERS = 4;
 
 const DOTS = {
@@ -359,19 +359,23 @@ class Game {
 
     this.vib([150,100,150]);
 
-    let faceACorrompre = -1;
-    for (let i = 6; i >= 1; i--) {
-      if (!this.blacklistedFaces.includes(i)) {
-        faceACorrompre = i;
-        break;
+    // REGLE : On ne détruit une face QUE si on vient de valider un des 4 premiers lancers normaux.
+    // Si on arrive ici à la fin du chrono du Round 4, on applique la 3ème destruction, puis on bloque.
+    if (this.lancers <= MAX_LANCERS && this.phase !== 'BONUS_TIMER') {
+      let faceACorrompre = -1;
+      for (let i = 6; i >= 1; i--) {
+        if (!this.blacklistedFaces.includes(i)) {
+          faceACorrompre = i;
+          break;
+        }
       }
-    }
 
-    if (faceACorrompre !== -1) {
-      this.blacklistedFaces.push(faceACorrompre);
-      const el = document.getElementById(`pd${faceACorrompre}`);
-      el.className = 'pool-die corrupted';
-      el.innerText = 'X';
+      if (faceACorrompre !== -1) {
+        this.blacklistedFaces.push(faceACorrompre);
+        const el = document.getElementById(`pd${faceACorrompre}`);
+        el.className = 'pool-die corrupted';
+        el.innerText = 'X';
+      }
     }
 
     const dangerPercent = Math.round((this.blacklistedFaces.length / 6) * 100);
@@ -395,7 +399,8 @@ class Game {
     if (this.lancers >= MAX_LANCERS && this.score < WIN) {
       this.phase = 'BONUS_ROLL';
       this.setTag('Score insuffisant');
-      this.setText(`Fin des 4 rounds. Score actuel : ${this.score}/${WIN}.<br><span class="t-bonus">Lancer ultime :</span> Il y a désormais <span class="t-danger">${dangerPercent}%</span> de chances de mort immédiate. Tente le tout pour le tout pour sauver l'orgasme ruiné !`);
+      // Le message indique bien que la dégradation est gelée à 50% (3 faces)
+      this.setText(`Fin des 4 rounds. Score actuel : ${this.score}/${WIN}.<br><span class="t-bonus">Lancer ultime (Sursis) :</span> La dégradation est figée. Toujours <span class="t-danger">50%</span> de chances de mort immédiate (Faces 4, 5, 6). Tente le tout pour le tout !`);
       this.updateUI();
       return;
     }
