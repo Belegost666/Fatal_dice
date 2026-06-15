@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#07050a">
-<title>Le Dé Fatal - Edition Express</title>
+<title>Le Dé Fatal - Objectif 12</title>
 <style>
   :root {
     --bg: radial-gradient(ellipse at 30% 20%, #1a0f2e 0%, #07050a 60%);
@@ -23,10 +23,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body {
-    height: 100%;
-    background-color: #07050a;
-  }
+  html, body { height: 100%; background-color: #07050a; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -60,12 +57,16 @@
   .title-row { text-align: center; margin-bottom: 22px; }
   h1 { font-size: 1.15rem; font-weight: 200; letter-spacing: 5px; text-transform: uppercase; color: var(--main); margin-bottom: 4px; }
 
-  .dashboard { display: flex; gap: 10px; margin-bottom: 22px; }
+  .dashboard { display: flex; gap: 10px; margin-bottom: 16px; }
   .stat-box { flex: 1; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04); border-radius: 14px; padding: 10px 0 8px; text-align: center; }
   .stat-label { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); display: block; margin-bottom: 5px; }
   .stat-val { font-size: 1.15rem; font-weight: 300; color: var(--gold-text); letter-spacing: 1px; }
   .score-bar-wrap { background: rgba(0,0,0,0.3); border-radius: 4px; height: 3px; margin: 6px 12px 0; overflow: hidden; }
   .score-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold) 0%, var(--gold-text) 100%); border-radius: 4px; transition: width 0.6s cubic-bezier(0.25,1,0.5,1); width: 0%; }
+
+  .pool-row { display: flex; justify-content: center; gap: 6px; margin-bottom: 20px; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.02); }
+  .pool-die { width: 28px; height: 28px; background: rgba(212,175,55,0.05); border: 1px solid rgba(212,175,55,0.2); color: var(--gold-text); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 600; transition: all 0.3s ease; }
+  .pool-die.corrupted { background: rgba(244, 63, 94, 0.15); border-color: var(--crimson); color: var(--crimson); box-shadow: 0 0 10px rgba(244, 63, 94, 0.2); font-size: 0.85rem; }
 
   .dice-container { display: flex; justify-content: center; margin: 4px 0 22px; }
   .die-wrap { position: relative; width: 80px; height: 80px; }
@@ -87,7 +88,7 @@
   .glow-red    { box-shadow: 0 0 0 2px rgba(244,63,94,0.7);   animation: glowRing 0.8s ease forwards; }
   .glow-purple { box-shadow: 0 0 0 2px rgba(168,85,247,0.7);  animation: glowRing 0.8s ease forwards; }
 
-  .info-panel { background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px; padding: 12px 15px; height: 102px; margin-bottom: 18px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 6px; }
+  .info-panel { background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.03); border-radius: 16px; padding: 12px 15px; height: 108px; margin-bottom: 18px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 6px; }
   .info-tag { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); background: rgba(255,255,255,0.04); padding: 3px 10px; border-radius: 20px; }
   .info-text { font-size: 0.85rem; font-weight: 300; line-height: 1.45; color: var(--main); }
 
@@ -122,13 +123,22 @@
   <div class="dashboard">
     <div class="stat-box">
       <span class="stat-label">Score</span>
-      <span class="stat-val" id="ui-score">0 / 15</span>
+      <span class="stat-val" id="ui-score">0 / 12</span>
       <div class="score-bar-wrap"><div class="score-bar-fill" id="score-bar"></div></div>
     </div>
     <div class="stat-box">
       <span class="stat-label">Rounds</span>
       <span class="stat-val" id="ui-lancers">0 / 4</span>
     </div>
+  </div>
+
+  <div class="pool-row">
+    <div class="pool-die" id="pd1">1</div>
+    <div class="pool-die" id="pd2">2</div>
+    <div class="pool-die" id="pd3">3</div>
+    <div class="pool-die" id="pd4">4</div>
+    <div class="pool-die" id="pd5">5</div>
+    <div class="pool-die" id="pd6">6</div>
   </div>
 
   <div class="rounds-row">
@@ -147,7 +157,7 @@
 
   <div class="info-panel">
     <div class="info-tag" id="ui-tag">Statut</div>
-    <div class="info-text" id="ui-text">Atteignez 15 points en 4 lancers. Attention aux doublons consécutifs !</div>
+    <div class="info-text" id="ui-text">Atteignez 12 points. À la fin de chaque round, la plus haute face restante est empoisonnée (X) !</div>
   </div>
 
   <div class="timer-wrap" id="timer-wrap">
@@ -160,7 +170,7 @@
 </div>
 
 <script>
-const WIN = 15;
+const WIN = 12; // Modifié à 12 points
 const MAX_LANCERS = 4;
 
 const DOTS = {
@@ -172,10 +182,13 @@ const DOTS = {
   6: [[22,20],[58,20],[22,40],[58,40],[22,60],[58,60]]
 };
 
-function renderDie(svgEl, value) {
+function renderDie(svgEl, value, isDead = false) {
   const isQ = value === '?';
-  let inner = `<rect x="2" y="2" width="76" height="76" rx="16" fill="#0a0814" stroke="${isQ ? 'rgba(255,255,255,0.1)' : 'rgba(212,175,55,0.35)'}" stroke-width="${isQ ? 1 : 1.5}"/>`;
-  if (isQ) {
+  let inner = `<rect x="2" y="2" width="76" height="76" rx="16" fill="#0a0814" stroke="${isDead ? '#f43f5e' : (isQ ? 'rgba(255,255,255,0.1)' : 'rgba(212,175,55,0.35)')}" stroke-width="${isQ ? 1 : 1.5}"/>`;
+  
+  if (isDead) {
+    inner += `<path d="M26,26 L54,54 M54,26 L26,54" stroke="#f43f5e" stroke-width="4" stroke-linecap="round"/>`;
+  } else if (isQ) {
     inner += `<text x="40" y="50" text-anchor="middle" font-size="32" font-weight="200" fill="#c49a2a" font-family="-apple-system,sans-serif">?</text>`;
   } else {
     DOTS[value].forEach(([cx,cy]) => { inner += `<circle cx="${cx}" cy="${cy}" r="5.5" fill="#e8b84b"/>`; });
@@ -189,11 +202,11 @@ class Game {
     this.lancers = 0;
     this.phase   = 'ROLL'; 
     this.timer   = null;
-    this.lastDie = 0;
     this.currentDie = 0;
     this._a1     = null;
     this._skipDelayTimer = null;
     this.isRolling = false;
+    this.blacklistedFaces = [];
   }
 
   vib(p) { if ('vibrate' in navigator) navigator.vibrate(p); }
@@ -223,7 +236,7 @@ class Game {
 
     let rv = setInterval(() => this.vib(15), 70);
     this.setTag('Lancer en cours…');
-    this.setText('Mélange du dé...');
+    this.setText('La tension monte…');
 
     setTimeout(() => {
       this.isRolling = false;
@@ -235,7 +248,13 @@ class Game {
 
       const res = Math.floor(Math.random() * 6) + 1;
       this.currentDie = res;
-      
+
+      if (this.blacklistedFaces.includes(res)) {
+        renderDie(s1, res, true); 
+        this.executeSuddenDeath(res);
+        return;
+      }
+
       renderDie(s1, res);
 
       if (isBonus) this.evalBonus();
@@ -243,19 +262,17 @@ class Game {
     }, 1200);
   }
 
+  executeSuddenDeath(face) {
+    this.phase = 'END';
+    this.triggerGlow('red');
+    this.vib([400, 100, 400, 100, 600]);
+    this.setTag(`Arrêt Brutal ! (Face Noire : ${face})`);
+    this.setText(`<span class="t-danger">BOOM ! Face Noire ${face} !</span><br>Le couperet est tombé. Session immédiatement interrompue. <span class="t-danger" style="font-weight:bold;">Interdiction formelle de jouir.</span>`);
+    this.updateUI();
+  }
+
   evalRules() {
     this.updateDots();
-
-    if (this.lancers > 1 && this.currentDie === this.lastDie) {
-      this.phase = 'END';
-      this.triggerGlow('red');
-      this.vib([300,100,300,100,500]);
-      this.setTag(`Doublon fatal ! (${this.currentDie})`);
-      this.setText(`<span class="t-danger">Deux fois le même chiffre d'affilée !</span><br>Le jeu s'arrête immédiatement. <span class="t-danger">Interdiction de jouir.</span>`);
-      this.updateUI();
-      return;
-    }
-
     this.score += this.currentDie;
     this.triggerGlow('gold');
 
@@ -263,17 +280,16 @@ class Game {
       this.phase = 'EDGING';
       this.vib([100,50,100,50,100,50,400]);
       this.setTag(`Objectif atteint ! · +${this.currentDie} pts`);
-      this.setText(`<span class="t-success">Score de ${this.score}/${WIN} atteint !</span><br>Masturbez-vous pendant les <b>${this.currentDie} minutes</b> de ce dernier dé. Orgasme autorisé à la fin du chrono !`);
+      this.setText(`<span class="t-success">Score de ${this.score}/${WIN} atteint !</span><br>C'est un miracle ! Survécru à l'asphyxie. Masturbez-vous pendant les <b>${this.currentDie} minutes</b> de ce dé. Orgasme autorisé à la fin !`);
       this.updateUI();
       this.startTimer(this.currentDie * 60);
       return;
     }
 
-    this.lastDie = this.currentDie; 
     this.phase = 'EDGING';
     this.vib(80);
     this.setTag(`Round ${this.lancers} / ${MAX_LANCERS} · +${this.currentDie} pts`);
-    this.setText(`<span class="t-gold">Consigne :</span> Masturbez-vous sans jouir pendant <b>${this.currentDie} minutes</b> avant le prochain lancer.`);
+    this.setText(`<span class="t-gold">Consigne :</span> Masturbez-vous sans venir pendant <b>${this.currentDie} minutes</b>.<br>Pendant ce temps, la plus forte face encore saine se détruit…`);
     
     this.updateUI();
     this.startTimer(this.currentDie * 60);
@@ -287,7 +303,7 @@ class Game {
       this.triggerGlow('purple');
       this.vib([200,100,200,100,200]);
       this.setTag(`Lancer Bonus Réussi ! · Score : ${this.score}`);
-      this.setText(`<span class="t-bonus">Objectif atteint (${this.score}/${WIN}) !</span><br>Masturbez-vous pendant <b>${this.currentDie} minutes</b> avant d'accéder à votre orgasme ruiné.`);
+      this.setText(`<span class="t-bonus">Objectif atteint (${this.score}/${WIN}) !</span><br>Dernière ligne droite : tenez les <b>${this.currentDie} minutes</b> de ce bonus pour obtenir un orgasme ruiné.`);
       this.updateUI();
       this.startTimer(this.currentDie * 60);
     } else {
@@ -295,7 +311,7 @@ class Game {
       this.triggerGlow('red');
       this.vib([600]);
       this.setTag(`Bonus Échoué · Score : ${this.score}/${WIN}`);
-      this.setText(`<span class="t-danger">Le compte n'y est pas.</span><br>Session terminée. <span class="t-danger">Vous n'êtes pas autorisé à jouir !</span>`);
+      this.setText(`<span class="t-danger">Le compte n'y est pas.</span><br>L'asphyxie du dé a gagné. <span class="t-danger">Pas de jouissance !</span>`);
       this.updateUI();
     }
   }
@@ -343,6 +359,23 @@ class Game {
 
     this.vib([150,100,150]);
 
+    let faceACorrompre = -1;
+    for (let i = 6; i >= 1; i--) {
+      if (!this.blacklistedFaces.includes(i)) {
+        faceACorrompre = i;
+        break;
+      }
+    }
+
+    if (faceACorrompre !== -1) {
+      this.blacklistedFaces.push(faceACorrompre);
+      const el = document.getElementById(`pd${faceACorrompre}`);
+      el.className = 'pool-die corrupted';
+      el.innerText = 'X';
+    }
+
+    const dangerPercent = Math.round((this.blacklistedFaces.length / 6) * 100);
+
     if (this.score >= WIN && this.phase !== 'BONUS_TIMER') {
       this.phase = 'END';
       this.setTag(`Victoire !`);
@@ -354,7 +387,7 @@ class Game {
     if (this.phase === 'BONUS_TIMER') {
       this.phase = 'END';
       this.setTag('Bonus validé !');
-      this.setText(`<span class="t-bonus">Temps bonus écoulé !</span><br>Vous avez gagné le droit à un <span class="t-bonus">orgasme ruiné</span>. Masturbez-vous jusqu'à l'orgasme, puis stoppez immédiatement toute stimulation au moment fatidique.`);
+      this.setText(`<span class="t-bonus">Temps bonus écoulé !</span><br>Vous gagnez le droit à un <span class="t-bonus">orgasme ruiné</span>. Montez au point de non-retour et coupez tout.`);
       this.updateUI();
       return;
     }
@@ -362,14 +395,14 @@ class Game {
     if (this.lancers >= MAX_LANCERS && this.score < WIN) {
       this.phase = 'BONUS_ROLL';
       this.setTag('Score insuffisant');
-      this.setText(`Fin des 4 rounds. Score actuel : ${this.score}/${WIN}.<br><span class="t-bonus">Lancer bonus :</span> Atteignez 15 avec ce lancer ultime pour obtenir un orgasme ruiné !`);
+      this.setText(`Fin des 4 rounds. Score actuel : ${this.score}/${WIN}.<br><span class="t-bonus">Lancer ultime :</span> Il y a désormais <span class="t-danger">${dangerPercent}%</span> de chances de mort immédiate. Tente le tout pour le tout pour sauver l'orgasme ruiné !`);
       this.updateUI();
       return;
     }
 
     this.phase = 'ROLL';
     this.setTag('Chrono terminé');
-    this.setText('Temps validé. Relancez le dé pour le round suivant.');
+    this.setText(`Temps validé ! La face la plus haute a été éliminée.<br>Risque d'arrêt brutal au prochain lancer : <span class="t-danger">${dangerPercent}%</span> !`);
     this.updateUI();
   }
 
@@ -445,9 +478,9 @@ class Game {
     this.score   = 0;
     this.lancers = 0;
     this.phase   = 'ROLL';
-    this.lastDie = 0;
     this.currentDie = 0;
     this.isRolling = false;
+    this.blacklistedFaces = [];
 
     clearInterval(this.timer);           this.timer   = null;
     clearInterval(this._a1);         this._a1     = null;
@@ -456,8 +489,13 @@ class Game {
     renderDie(document.getElementById('d1'), '?');
     document.getElementById('score-bar').style.width = '0%';
 
+    for(let i=1; i<=6; i++) {
+      document.getElementById(`pd${i}`).className = 'pool-die';
+      document.getElementById(`pd${i}`).innerText = i;
+    }
+
     this.setTag('Statut');
-    this.setText('Nouvelle partie. Atteignez 15 points en 4 lancers sans faire de doublons.');
+    this.setText('Nouvelle partie. Atteignez 12 points. À la fin de chaque round, la plus haute face restante est empoisonnée (X) !');
 
     this.updateDots();
     this.updateUI();
