@@ -183,22 +183,17 @@ function renderDie(svgEl, value) {
   svgEl.innerHTML = inner;
 }
 
-function animDots(svgEl) {
-  const seq = [1,2,3,4,5,6,1,2,3,4,5,6];
-  let i = 0;
-  return setInterval(() => { renderDie(svgEl, seq[i++ % seq.length]); }, 80);
-}
-
 class Game {
   constructor() {
     this.score   = 0;
     this.lancers = 0;
-    this.phase   = 'ROLL'; // ROLL, EDGING, BONUS_ROLL, BONUS_TIMER, END
+    this.phase   = 'ROLL'; 
     this.timer   = null;
     this.lastDie = 0;
     this.currentDie = 0;
     this._a1     = null;
     this._skipDelayTimer = null;
+    this.isRolling = false;
   }
 
   vib(p) { if ('vibrate' in navigator) navigator.vibrate(p); }
@@ -210,33 +205,37 @@ class Game {
   }
 
   roll(isBonus) {
+    if (this.isRolling) return; 
+
     const btn = document.getElementById('ui-btn');
     const s1  = document.getElementById('d1');
 
-    if (this._a1) {
-      clearInterval(this._a1);
-      this._a1 = null;
-    }
-
+    this.isRolling = true;
     btn.disabled = true;
     s1.classList.add('rolling-die');
 
-    this._a1 = animDots(s1);
+    let faceVirtuelle = 1;
+    this._a1 = setInterval(() => {
+      if (!this.isRolling) return; 
+      faceVirtuelle = (faceVirtuelle % 6) + 1;
+      renderDie(s1, faceVirtuelle);
+    }, 80);
 
     let rv = setInterval(() => this.vib(15), 70);
     this.setTag('Lancer en cours…');
     this.setText('Mélange du dé...');
 
     setTimeout(() => {
-      clearInterval(rv);
+      this.isRolling = false;
       clearInterval(this._a1); 
+      clearInterval(rv);
       this._a1 = null; 
       
       s1.classList.remove('rolling-die');
 
       const res = Math.floor(Math.random() * 6) + 1;
-      
       this.currentDie = res;
+      
       renderDie(s1, res);
 
       if (isBonus) this.evalBonus();
@@ -247,7 +246,6 @@ class Game {
   evalRules() {
     this.updateDots();
 
-    // ── Règle du doublon consécutif ──────────────────────────────────────
     if (this.lancers > 1 && this.currentDie === this.lastDie) {
       this.phase = 'END';
       this.triggerGlow('red');
@@ -261,7 +259,6 @@ class Game {
     this.score += this.currentDie;
     this.triggerGlow('gold');
 
-    // ── Score de victoire ou dépassement atteint (>= 15) ──────────────────
     if (this.score >= WIN) {
       this.phase = 'EDGING';
       this.vib([100,50,100,50,100,50,400]);
@@ -272,12 +269,10 @@ class Game {
       return;
     }
 
-    // ── Rounds normaux (score < 15) ──────────────────────────────────────
     this.lastDie = this.currentDie; 
     this.phase = 'EDGING';
     this.vib(80);
     this.setTag(`Round ${this.lancers} / ${MAX_LANCERS} · +${this.currentDie} pts`);
-
     this.setText(`<span class="t-gold">Consigne :</span> Masturbez-vous sans jouir pendant <b>${this.currentDie} minutes</b> avant le prochain lancer.`);
     
     this.updateUI();
@@ -393,6 +388,9 @@ class Game {
     }
   }
 
+  setTag(txt) { document.getElementById('ui-tag').innerText = txt; }
+  setText(txt) { document.getElementById('ui-text').innerHTML = txt; }
+
   updateUI() {
     document.getElementById('ui-score').innerText   = `${this.score} / ${WIN}`;
     document.getElementById('ui-lancers').innerText = `${Math.min(this.lancers, MAX_LANCERS)} / ${MAX_LANCERS}`;
@@ -449,6 +447,7 @@ class Game {
     this.phase   = 'ROLL';
     this.lastDie = 0;
     this.currentDie = 0;
+    this.isRolling = false;
 
     clearInterval(this.timer);           this.timer   = null;
     clearInterval(this._a1);         this._a1     = null;
