@@ -632,14 +632,16 @@ class Game {
       this.panel('s-violet'); this.ui(); return;
     }
 
-    // Destroy highest clean face
-    for(let i=6;i>=1;i--){
-      if(!this.bl.includes(i)){
-        this.bl.push(i);
-        const el=$(`fp${i}`);
-        el.classList.add('dying');
-        setTimeout(()=>el.classList.add('dead'),350);
-        break;
+    // Destroy highest clean face (uniquement si on n'a pas fini les 4 rounds)
+    if(this.rounds < MAX){
+      for(let i=6;i>=1;i--){
+        if(!this.bl.includes(i)){
+          this.bl.push(i);
+          const el=$(`fp${i}`);
+          el.classList.add('dying');
+          setTimeout(()=>el.classList.add('dead'),350);
+          break;
+        }
       }
     }
 
@@ -753,7 +755,7 @@ class Game {
 
 const $=id=>document.getElementById(id);
 
-/* ── Wake Lock — empêche l'écran de s'éteindre pendant le chrono ── */
+/* ── Wake Lock ── */
 let _wl=null;
 async function wakeLockOn(){
   if(!('wakeLock' in navigator)) return;
@@ -762,7 +764,6 @@ async function wakeLockOn(){
 function wakeLockOff(){
   if(_wl){ _wl.release(); _wl=null; }
 }
-// Réacquiert le wake lock si l'app revient au premier plan pendant le chrono
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'&&(G.phase==='EDGING'||G.phase==='BTIMER')) wakeLockOn();
 });
