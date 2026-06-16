@@ -657,7 +657,7 @@ class Game {
     if(this.rounds>=MAX){
       this.phase='BONUS'; this.card('g-violet');
       this.tag('Score insuffisant');
-      this.txt(`Fin des 4 rounds. Score : ${this.score}/${WIN}.<br><span class="tv">Lancer ultime :</span><span class="td">${pct}% de risque de perdre.</span> Tentez le tout !`);
+      this.txt(`Fin des 4 rounds. Score : ${this.score}/${WIN}.<br><span class="tv">Lancer ultime : </span><span class="td">${pct}% de risque de perdre.</span><br>Tentez le tout !`);
       this.panel('s-violet'); this.ui(); return;
     }
 
