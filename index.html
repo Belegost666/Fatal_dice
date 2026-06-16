@@ -352,8 +352,7 @@ h1 {
 
 <div class="card" id="card">
   <div class="hdr">
-    <span class="eyebrow">Jeu de tension</span>
-    <h1>Le Dé Fatal</h1>
+   <h1>Le Dé Fatal</h1>
   </div>
 
   <div class="stats">
@@ -398,7 +397,7 @@ h1 {
 
   <div class="info" id="info">
     <div class="itag" id="itag">Statut</div>
-    <div class="itext" id="itext">Atteignez 12 points. À la fin de chaque round, la plus haute face restante est empoisonnée (✕).</div>
+    <div class="itext" id="itext">Atteignez 12 points. À la fin de chaque round, la face la plus forte restante devient perdante (✕).</div>
   </div>
 
   <div class="timer" id="timer">
@@ -556,7 +555,7 @@ class Game {
     this.glow('red'); this.burst('red'); this.card('g-red');
     this.vib([350,100,350,100,500]);
     this.tag(`Arrêt brutal — Face noire : ${f}`);
-    this.txt(`<span class="td">FATAL. Face noire ${f} tombée.</span><br>Session interrompue immédiatement. <span class="td" style="font-weight:600">Interdiction formelle de jouir.</span>`);
+    this.txt(`<span class="td">Face perdante.</span><br>Session interrompue immédiatement. <span class="td" style="font-weight:600">Interdiction de jouir !</span>`);
     this.panel('s-red');
     this.ui();
   }
@@ -578,7 +577,7 @@ class Game {
     this.phase='EDGING'; this.card('');
     this.vib(70);
     this.tag(`Round ${this.rounds} / ${MAX} · +${this.face} pts`);
-    this.txt(`<span class="tg">Consigne :</span> Masturbez-vous sans venir pendant <b>${this.face} minutes</b>.<br>La face la plus haute encore saine sera détruite à la fin.`);
+    this.txt(`<span class="tg">Consigne :</span> Masturbez-vous sans jouir pendant <b>${this.face} minutes</b>.<br>La face la plus haute suivante devient perdante.`);
     this.panel(''); this.ui(); this.startTimer(this.face*60);
   }
 
@@ -589,14 +588,14 @@ class Game {
       this.glow('violet'); this.burst('violet');
       this.vib([180,80,180,80,250]);
       this.tag(`Bonus réussi ! · Score : ${this.score}`);
-      this.txt(`<span class="tv">Objectif atteint (${this.score}/${WIN}) !</span><br>Ultime épreuve : tenez les <b>${this.face} minutes</b> pour un orgasme ruiné.`);
+      this.txt(`<span class="tv">Objectif atteint (${this.score}/${WIN}) !</span><br>Masturbez-vous pendant <b>${this.face} minutes</b>. Ruinez votre orgasme à la fin !`);
       this.panel('s-violet'); this.ui(); this.startTimer(this.face*60);
     } else {
       this.phase='END'; this.card('g-red');
       this.glow('red'); this.burst('red');
       this.vib(600);
       this.tag(`Bonus échoué · ${this.score}/${WIN}`);
-      this.txt(`<span class="td">Le compte n'y est pas.</span><br>La corruption du dé a gagné. <span class="td">Pas de jouissance.</span>`);
+      this.txt(`<span class="td">Le compte n'y est pas.</span><br><span class="td">Interdiction de jouir !</span>`);
       this.panel('s-red'); this.ui();
     }
   }
@@ -628,7 +627,7 @@ class Game {
     if(this.phase==='BTIMER'){
       this.phase='END'; this.card('g-violet');
       this.tag('Bonus validé !');
-      this.txt(`<span class="tv">Temps bonus écoulé !</span><br>Vous gagnez le droit à un <span class="tv">orgasme ruiné</span>. Montez au point de non-retour et coupez tout.`);
+      this.txt(`<span class="tv">Temps écoulé !</span><br>Vous gagnez le droit à un <span class="tv">orgasme ruiné</span>. Montez au point de non-retour et coupez tout.`);
       this.panel('s-violet'); this.ui(); return;
     }
 
@@ -651,20 +650,20 @@ class Game {
       this.phase='END'; this.card('g-green');
       this.glow('green'); this.burst('green');
       this.tag('Victoire !');
-      this.txt(`<span class="ts">Temps validé — Félicitations !</span><br><span class="ts" style="font-size:1.05rem;font-weight:600;display:block;margin-top:6px">VOUS AVEZ LE DROIT DE JOUIR.</span>`);
+      this.txt(`<span class="ts">Félicitations !</span><br><span class="ts" style="font-size:1.05rem;font-weight:600;display:block;margin-top:6px">VOUS AVEZ LE DROIT DE JOUIR.</span>`);
       this.panel('s-green'); this.ui(); return;
     }
 
     if(this.rounds>=MAX){
       this.phase='BONUS'; this.card('g-violet');
       this.tag('Score insuffisant');
-      this.txt(`Fin des 4 rounds. Score : ${this.score}/${WIN}.<br><span class="tv">Lancer ultime (Sursis) :</span> Dégradation figée. <span class="td">${pct}% de risque fatal.</span> Tentez le tout !`);
+      this.txt(`Fin des 4 rounds. Score : ${this.score}/${WIN}.<br><span class="tv">Lancer ultime :</span><span class="td">${pct}% de risque de perdre.</span> Tentez le tout !`);
       this.panel('s-violet'); this.ui(); return;
     }
 
     this.phase='ROLL'; this.card('');
     this.tag('Chrono terminé');
-    this.txt(`Face détruite. Risque au prochain lancer : <span class="td">${pct}%</span>.`);
+    this.txt(`Un nouvelle face perdante s'ajoute. Risque de perdre au prochain lancer : <span class="td">${pct}%</span>.`);
     this.panel(''); this.ui();
   }
 
@@ -715,7 +714,7 @@ class Game {
         tmr.classList.add('on'); break;
 
       case 'BONUS':
-        btn.textContent='Lancer ultime — Sursis'; btn.disabled=false;
+        btn.textContent='Lancer ultime'; btn.disabled=false;
         btn.classList.add('v'); tmr.classList.remove('on'); break;
 
       case 'END':
@@ -744,7 +743,7 @@ class Game {
     }
 
     this.tag('Statut');
-    this.txt('Atteignez 12 points. À la fin de chaque round, la plus haute face restante est empoisonnée (✕).');
+    this.txt('Atteignez 12 points. À la fin de chaque round, la face la plus haute restante devient perdante (✕).');
     for(let i=0;i<MAX;i++){
       const d=$(`rp${i}`);
       d.className=i===0?'rp active':'rp';
